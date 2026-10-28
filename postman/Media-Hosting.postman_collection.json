@@ -1,0 +1,24 @@
+{
+  "info": { "name": "Local Media Hosting API", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{authToken}}", "type": "string" }] },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "email", "value": "owner@example.com" },
+    { "key": "password", "value": "replace-this-password" },
+    { "key": "authToken", "value": "" },
+    { "key": "mediaId", "value": "" },
+    { "key": "shareToken", "value": "" }
+  ],
+  "item": [
+    { "name": "Health", "request": { "method": "GET", "url": "{{baseUrl}}/api/health" } },
+    { "name": "Register account", "request": { "auth": { "type": "noauth" }, "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/auth/register" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) pm.collectionVariables.set('authToken', pm.response.json().token);"] } }] },
+    { "name": "Login", "request": { "auth": { "type": "noauth" }, "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/auth/login" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 200) pm.collectionVariables.set('authToken', pm.response.json().token);"] } }] },
+    { "name": "Current account", "request": { "method": "GET", "url": "{{baseUrl}}/api/auth/me" } },
+    { "name": "Upload image or video", "request": { "method": "POST", "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "" }, { "key": "expiryMinutes", "value": "1440", "type": "text" }] }, "url": "{{baseUrl}}/api/media/upload" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) {", "  const m = pm.response.json().media;", "  pm.collectionVariables.set('mediaId', m.id);", "  pm.collectionVariables.set('shareToken', m.shareUrl.split('/').pop());", "}"] } }] },
+    { "name": "List my media", "request": { "method": "GET", "url": "{{baseUrl}}/api/media" } },
+    { "name": "Fetch public share metadata", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/api/share/{{shareToken}}" } },
+    { "name": "Fetch public inline asset", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/api/share/{{shareToken}}/asset" } },
+    { "name": "Revoke my media", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/media/{{mediaId}}" } },
+    { "name": "Logout", "request": { "method": "POST", "url": "{{baseUrl}}/api/auth/logout" }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 200) pm.collectionVariables.unset('authToken');"] } }] }
+  ]
+}

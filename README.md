@@ -74,3 +74,4 @@ Import `postman/Media-Hosting.postman_collection.json`. Register or login first;
 ## Persistence
 
 Docker Compose bind-mounts `backend/uploads/` and stores MongoDB data in the `mongo_data` named volume. They survive container restarts. `docker compose down` preserves the named volume; `docker compose down -v` deletes the MongoDB data volume. Do not use that command if you need to preserve accounts and metadata.
+"# SEND-_FIle" 
